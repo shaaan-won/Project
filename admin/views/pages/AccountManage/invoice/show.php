@@ -84,17 +84,26 @@
                 </td>
                 <td>
                     <p><strong> Date:</strong>
-                        <?php echo date("F d, Y",strtotime($invoice->created_at)); ?>
+                        <?php echo $invoice->created_at; ?>
                     </p>
                 </td>
             </tr>
             <tr>
-                <td><strong>Guest Name:</strong> <?php echo Invoice::find($invoice->id)->customer_detail_name ?></td>
-                <td><strong>Room Number:</strong> <?php // ?> </td>
+                <td><strong>Guest Name:</strong> <?php echo Invoice::find($invoice->id)->customer_detail_name ?>
+                </td>
+                <td><strong>Room Number:</strong> <?php //echo Room::find(Reservation::find(Invoice::find($invoice->id)->reservation_id)->room_id)->room_number 
+                echo InvoicesView::find($invoice->id)->room_number ?>
+                </td>
             </tr>
             <tr>
-                <td><strong>Check-In:</strong> <input type="date" class="input-field"></td>
-                <td><strong>Check-Out:</strong> <input type="date" class="input-field"></td>
+                <td><strong>Check-In DateTime:</strong> <?php //echo InvoicesView::find($invoice->id)->check_in
+                echo Reservation::find(Invoice::find($invoice->id)->reservation_id)->check_in_date
+                ?> </td>
+                <td><strong>Check-Out DateTime:</strong> 
+
+                    <?php //echo Reservation::find(Invoice::find($invoice->id)->reservation_id)->check_out_date
+                    
+                    echo InvoicesView::find($invoice->id)->check_out ?></td>
             </tr>
         </table>
     </div>
@@ -110,9 +119,15 @@
             </thead>
             <tbody id="items-body" class="items-body">
                 <tr class="item-row">
-                    <td><input type="text" class="input-field item-name" placeholder="Room Charges"></td>
-                    <td><input type="number" class="input-field quantity" placeholder="3" oninput="updateTotals()"></td>
-                    <td><input type="number" class="input-field unit-price" placeholder="100.00" step="0.01" oninput="updateTotals()"></td>
+                    <td>
+                        
+                    </td>
+                    <td>
+
+                    </td>
+                    <td>
+
+                    </td>
                     <td class="total">300.00</td>
                 </tr>
             </tbody>
