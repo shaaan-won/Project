@@ -80,7 +80,7 @@
         <table>
             <tr>
                 <td>
-                    <p><strong>Invoice No:</strong> <?php echo $invoice->id; ?> </p>
+                    <p><strong>Invoice No:</strong> INV- <?php echo $invoice->id; ?> </p>
                 </td>
                 <td>
                     <p><strong> Date:</strong>
@@ -89,8 +89,8 @@
                 </td>
             </tr>
             <tr>
-                <td><strong>Guest Name:</strong> <input type="text" class="input-field" placeholder="Enter Guest Name"></td>
-                <td><strong>Room Number:</strong> <input type="text" class="input-field" placeholder="Enter Room Number"></td>
+                <td><strong>Guest Name:</strong> <?php echo Invoice::find($invoice->id)->customer_detail_name ?></td>
+                <td><strong>Room Number:</strong> <?php // ?> </td>
             </tr>
             <tr>
                 <td><strong>Check-In:</strong> <input type="date" class="input-field"></td>
