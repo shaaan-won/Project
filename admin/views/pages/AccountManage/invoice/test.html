@@ -1,4 +1,4 @@
-<label for="comboBox">Select or Type:</label>
+<!-- <label for="comboBox">Select or Type:</label>
 <div style="display: flex; align-items: center;">
   <input type="text" id="comboBox" placeholder="Type or select">
   <select id="dropdown" onchange="updateInput()">
@@ -7,4 +7,38 @@
     <option value="Option 2">Option 2</option>
     <option value="Option 3">Option 3</option>
   </select>
-</div>
+</div> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Model</title>
+</head>
+<body>
+    <h1>Create a New Model</h1>
+    <form action="create_model.php" method="post">
+        <!-- Text Input -->
+        <label for="model_name">Model Name:</label>
+        <input type="text" id="model_name" name="model_name" required>
+        <br><br>
+        
+        <!-- Select Dropdown -->
+        <label for="model_type">Model Type:</label>
+        <select id="model_type" name="model_type" required>
+            <option value="type1">Type 1</option>
+            <option value="type2">Type 2</option>
+            <option value="type3">Type 3</option>
+        </select>
+        <br><br>
+        
+        <!-- Number Input -->
+        <label for="model_version">Model Version:</label>
+        <input type="number" id="model_version" name="model_version" step="0.1" required>
+        <br><br>
+        
+        <!-- Submit Button -->
+        <button type="submit">Create Model</button>
+    </form>
+</body>
+</html>
+

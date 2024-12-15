@@ -101,23 +101,14 @@ CREATE TABLE ht_CheckInCheckOut (
 );
 
 -- 7. Billing Table
-Drop table if exists ht_Billings;
-CREATE TABLE if not exists ht_Billings (
+CREATE TABLE ht_Billings (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    invoice_id INT,
     reservation_id INT,
     user_id INT,
-    customer_detail_name VARCHAR(255) references ht_invoices(customer_detail_name),
-    itemized_names TEXT,
-    itemized_charges DECIMAL(10, 2),
-    discount_amount DECIMAL(10, 2),
-    tax_amount DECIMAL(10, 2),
+    itemized_charges JSON,
     total_amount DECIMAL(10, 2),
-    payment_id INT references ht_payments(id),
-    payment_amount DECIMAL(10, 2) references ht_payments(amount),
-    payment_method VARCHAR(50) references ht_payments(payment_method_id),
-    payment_status VARCHAR(50),
-    payment_date timestamp references ht_payments(payment_date),
+    payment_method VARCHAR(50),
+    payment_date timestamp,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -270,37 +261,12 @@ VALUES
 (4, '2024-12-15 14:30:00', '2024-12-18 12:00:00', 'Guests celebrated their anniversary; everything went smoothly.');
 
 -- Inserting data into ht_Billings table
--- INSERT INTO ht_Billings (reservation_id, user_id, itemized_charges, total_amount, payment_method, payment_date) 
--- VALUES 
--- (1, 1, '{"room_charge": 150.00, "tax": 50.00}', 200.00, 'Credit Card', '2024-11-26'),
--- (2, 2, '{"room_charge": 400.00, "tax": 50.00}', 450.00, 'Debit Card', '2024-12-01'),
--- (3, 3, '{"room_charge": 550.00, "tax": 50.00}', 600.00, 'Credit Card', '2024-12-10'),
--- (4, 4, '{"room_charge": 1000.00, "tax": 200.00}', 1200.00, 'PayPal', '2024-12-15');
-
--- Insert 1 billing
-INSERT INTO ht_Billings 
-(invoice_id, reservation_id, user_id, customer_detail_name, itemized_names, itemized_charges, discount_amount, tax_amount, total_amount, payment_id, payment_amount, payment_method, payment_status, payment_date) 
+INSERT INTO ht_Billings (reservation_id, user_id, itemized_charges, total_amount, payment_method, payment_date) 
 VALUES 
-(1, 101, 1001, 'John Doe', 'Room Service, Spa', 200.00, 20.00, 10.00, 190.00, 1, 190.00, 'Credit Card', 'Paid', '2023-12-01 10:30:00');
-
--- Insert 2 billing
-INSERT INTO ht_Billings 
-(invoice_id, reservation_id, user_id, customer_detail_name, itemized_names, itemized_charges, discount_amount, tax_amount, total_amount, payment_id, payment_amount, payment_method, payment_status, payment_date) 
-VALUES 
-(2, 102, 1002, 'Jane Smith', 'Dinner, Parking', 150.00, 15.00, 7.50, 142.50, 2, 142.50, 'Cash', 'Paid', '2023-12-02 18:45:00');
-
--- Insert 3 billing
-INSERT INTO ht_Billings 
-(invoice_id, reservation_id, user_id, customer_detail_name, itemized_names, itemized_charges, discount_amount, tax_amount, total_amount, payment_id, payment_amount, payment_method, payment_status, payment_date) 
-VALUES 
-(3, 103, 1003, 'Michael Brown', 'Conference Room, Coffee Service', 300.00, 30.00, 15.00, 285.00, 3, 285.00, 'Bank Transfer', 'Pending', '2023-12-03 09:00:00');
-
--- Insert 4 billing
-INSERT INTO ht_Billings 
-(invoice_id, reservation_id, user_id, customer_detail_name, itemized_names, itemized_charges, discount_amount, tax_amount, total_amount, payment_id, payment_amount, payment_method, payment_status, payment_date) 
-VALUES 
-(4, 104, 1004, 'Emily Davis', 'Room Stay, Breakfast', 500.00, 50.00, 25.00, 475.00, 4, 475.00, 'Debit Card', 'Paid', '2023-12-04 08:15:00');
-
+(1, 1, '{"room_charge": 150.00, "tax": 50.00}', 200.00, 'Credit Card', '2024-11-26'),
+(2, 2, '{"room_charge": 400.00, "tax": 50.00}', 450.00, 'Debit Card', '2024-12-01'),
+(3, 3, '{"room_charge": 550.00, "tax": 50.00}', 600.00, 'Credit Card', '2024-12-10'),
+(4, 4, '{"room_charge": 1000.00, "tax": 200.00}', 1200.00, 'PayPal', '2024-12-15');
 
 -- Inserting data into ht_Payments table
 INSERT INTO ht_Payments (reservation_id, amount, payment_method_id, payment_date) 
@@ -526,11 +492,11 @@ VALUES
 
 
 --View table for invoice extract
-Drop view if exists ht_invoices_view;
+
 Create view ht_invoices_view as
 select id,name,customer_detail_id,customer_detail_name,reservation_id,total_amount,tax_amount,payment_status,created_at,updated_at,
--- (select name from ht_reservations where id=ht_invoices.reservation_id) as reservation_name,
--- (select name from ht_rooms where id=(select room_id from ht_reservations where id=ht_invoices.reservation_id)) as room_name,
+(select name from ht_reservations where id=ht_invoices.reservation_id) as reservation_name,
+(select name from ht_rooms where id=(select room_id from ht_reservations where id=ht_invoices.reservation_id)) as room_name,
 (select room_number from ht_rooms where id=(select room_id from ht_reservations where id=ht_invoices.reservation_id)) as room_number,
 (select name from ht_room_types where id=(select room_type_id from ht_rooms where id=(select room_id from ht_reservations where id=ht_invoices.reservation_id))) as room_type_name,
 (select check_in_date from ht_reservations where id=ht_invoices.reservation_id) as check_in,

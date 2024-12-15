@@ -16,6 +16,17 @@
 // echo Form::close();
 // echo Page::context_close();
 // echo Page::body_close();
+// global $db;
+// $result = $db->query("SELECT * FROM reservations");
+// $result = $result->fetch_all(MYSQLI_ASSOC);
+
+// function getCheckInDate($id) {
+// 	global $db;
+// 	$result = $db->query("SELECT check_in FROM reservations WHERE id = $id");
+// 	$result = $result->fetch_all(MYSQLI_ASSOC);
+// 	return $result[0]["check_in"];
+// }
+
 ?>
 
 <style>
@@ -77,6 +88,17 @@
 		padding: 0;
 		margin: 0;
 		font-size: inherit;
+	}
+
+	#discount {
+		width: 100px;
+		margin-left: 10px;
+		margin-right: 10px;
+		font-size: 14px;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		text-align: center;
+		box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
 	}
 </style>
 
@@ -152,42 +174,65 @@
 					<th><Button class="btn btn-danger" id="clear-all">Clear All</Button></th>
 				</tr>
 			</thead>
-			<tbody id="items-body" class="items-body">
-				<!-- <tr class="item-row">
+			<!--<tbody id="items-body" class="items-body">
+				 <tr class="item-row">
 					<td><input type="text" class="input-field item-name" placeholder="Room Charges" value="Room Charges"></td>
 					<td><input type="number" class="input-field quantity" placeholder="3" oninput="updateTotals()"></td>
 					<td><input type="number" class="input-field unit-price" placeholder="100.00" step="0.01" oninput="updateTotals()"></td>
 					<td class="total">300.00</td>
 					<td style="align-items: center;"><Button class="btn btn-info ">Delete</Button></td>
-				</tr> -->
+				</tr> 
+			</tbody>-->
+			<thead>
+				<tr>
+					<th id="item-name">
+						<input type="text" class="input-field" placeholder="Room Charges& Other Services"><br>
+						<?php echo RoomType::html_select("cmbRoomType");
+						?>
+					</th>
+					<th id="qty_night"><input type="number" class="input-field" value="1"></th>
+					<th id="price_night">
+						<input type="number" class="input-field unit-price" placeholder="100.00" step="10" placeholder="100.00"><br>
+						<?php echo RoomType::html_select1("cmbroomprice"); ?>
+					</th>
+					<th><span id="total">0.00</span></th>
+					<th><button type="button" class="btn btn-primary" id="adds-item">Add +</button></th>
+				</tr>
+			</thead>
+			<tbody id="items-body">
+
 			</tbody>
 		</table>
-		<button type="button" class="btn btn-primary" id="adds-item">Add +</button>
+
 	</div>
 	<div class="summary table-responsive">
 		<table>
 			<tr>
 				<td><strong>Subtotal</strong></td>
-				<td id="subtotal">300.00</td>
+				<td id="subtotal">00.00</td>
 			</tr>
 			<tr>
 				<td>
 					<strong>Discount</strong>
-					<input type="text" class="input-field" placeholder="Enter Discount" id="discount" value="10">
+					<input type="text" placeholder="Enter Discount" id="discount" value="10">
 				</td>
-				<td id="discount-amount">0.00</td>
+				<td><span id="discount-amount">00.00</span></td>
 			</tr>
 			<tr>
-				<td><strong>Tax (10%)</strong></td>
-				<td id="tax">30.00</td>
+				<td><strong>Tax (05%)</strong></td>
+				<td id="tax">00.00</td>
+			</tr>
+			<tr>
+				<td><strong>Amount Paid</strong></td>
+				<td id="amount-paid"><input type="number" class="input-field" placeholder="Enter Amount Paid" step="100"></td>
 			</tr>
 			<tr>
 				<td><strong>Amount Due</strong></td>
-				<td id="amount-due">330.00</td>
+				<td id="amount-due">00.00</td>
 			</tr>
 			<tr>
 				<td><strong>Total</strong></td>
-				<td id="grand-total">330.00</td>
+				<td id="grand-total">000.00</td>
 			</tr>
 		</table>
 		<div class="center" style="margin-top: 20px; text-align: center; font-size: 14px;font-family: Arial, sans-serif; font-weight: bold;">
@@ -209,14 +254,7 @@
 </div>
 
 <script>
-	$(document).ready(function() {
-		$('.guest-name').on('change', function() {
-			$(this).find('.input-field').val($(this).find('option:selected').text());
-		});
-		$('.room-name').on('change', function() {
-			$(this).find('.input-field').val($(this).find('option:selected').text());
-		});
-	})
+	//check in and check out
 	$(document).ready(function() {
 		// Ensure check-out date is always after check-in date
 		$('#check-in-date, #check-out-date').on('change', function() {
@@ -239,27 +277,82 @@
 		});
 	});
 
+	// guest and room 
 	$(document).ready(function() {
+		$('.guest-name').on('change', function() {
+			$(this).find('.input-field').val($(this).find('option:selected').text());
+		});
+		$('.room-name').on('change', function() {
+			$(this).find('.input-field').val($(this).find('option:selected').text());
+		});
+		$('#item-name').on('click', function() {
+			$(this).find('.input-field').val($(this).find('option:selected').text());
+		})
+		$('#price_night').on('click', function() {
+			$(this).find('.input-field').val($(this).find('option:selected').text());
+		})
+		$('#price_night').on('change', function() {
+			$(this).find('.input-field').val($(this).find('option:selected').text());
+			let price = $(this).find('.input-field').val();
+			let qty = $('#qty_night').find('.input-field').val();
+			let total = price * qty;
+			$('#total').text(total);
+		})
+		$('#clear-all').on('click', function() {
+			$('.item-row').empty();
+		})
+
+
+
+		// add item delete all delete
 		$('#adds-item').on('click', function() {
 			// $("this").html("Add +");
+			let item = $('#item-name').find('.input-field').val();
+			let qty = $('#qty_night').find('.input-field').val();
+			let price = $('#price_night').find('.input-field').val();
+			let total = $('#total').text();
 			$('#items-body').append(`
 				<tr class="item-row">
-					<td><input type="text" class="input-field item-name" placeholder="Item Name"></td>
-					<td><input type="number" class="input-field quantity" placeholder="0" id="quantity"></td>
-					<td><input type="number" class="input-field unit-price" placeholder="0.00" step="100" id="unit-price"></td>
-					<td class="total">0.00</td>
-					<td style="align-items: center;"><Button class="btn btn-info dlt-item " id="dlt-item">Delete</Button></td>
+					<td><input type="text" class="input-field item-name" placeholder="Room Charges" value="${item}"></td>
+					<td><input type="text" class="input-field quantity" placeholder="Quantity" value="${qty}"></td>
+					<td><input type="text" class="input-field unit-price" placeholder="Unit Price" value="${price}"></td>
+					<td class="total-by-section">${total}</td>
+					<td style="align-items: center;"><Button class="btn btn-info dlt-item">Delete</Button></td>	
 				</tr>
 			`);
+			// Delete item row
 			$('.item-row').on('click', '.dlt-item', function() {
 				$(this).closest('tr').remove();
 			});
+			// subtotal 
+			let subtotal = 0;
+			$('.item-row').each(function() {
+				let total = parseFloat($(this).find('.total-by-section').text());
+				subtotal += total;
+			});
+			$('#subtotal').text(subtotal);
+			//discount amount
+			let discount = $('#discount').val();
+			let discountAmount = (discount / 100) * subtotal;
+			$('#discount-amount').text(discountAmount);
+			
+
+			// tax
+			let tax = subtotal * 0.05;
+			$('#tax').text(tax);
+
+			// grand total
+			var grandTotal = subtotal - discountAmount + tax;
+			$('#grand-total').text(grandTotal);
+
+			//amount paid
+			$('#amount-paid').on('input', function() {
+				let amountPaid = $(this).val();
+				let balanceDue = grandTotal - amountPaid;
+				$('#amount-due').text(balanceDue);
+			})
 		});
 
-
-		$('#btnProcessinvoice').on('click', function() {
-			$('#processInvoiceModal').modal('show');
-		});
 	});
 </script>
 
