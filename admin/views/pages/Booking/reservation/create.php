@@ -5,7 +5,7 @@ echo Html::link(["class"=>"btn btn-success", "route"=>"reservation", "text"=>"Ma
 echo Page::context_open();
 echo Form::open(["route"=>"reservation/save"]);
 	echo Form::input(["label"=>"User","name"=>"user_id","table"=>"users"]);
-	echo Form::input(["label"=>"Customer","name"=>"customer_id","table"=>"customer_details"]);
+	echo Form::input(["label"=>"Customer Detail","name"=>"customer_detail_id","table"=>"customer_details"]);
 	echo Form::input(["label"=>"Room","name"=>"room_id","table"=>"rooms"]);
 	echo Form::input(["label"=>"Check In Date","type"=>"text","name"=>"check_in_date"]);
 	echo Form::input(["label"=>"Check Out Date","type"=>"text","name"=>"check_out_date"]);

@@ -6,7 +6,7 @@ echo Page::context_open();
 echo Form::open(["route"=>"reservation/update"]);
 	echo Form::input(["label"=>"Id","type"=>"hidden","name"=>"id","value"=>"$reservation->id"]);
 	echo Form::input(["label"=>"User","name"=>"user_id","table"=>"users","value"=>"$reservation->user_id"]);
-	echo Form::input(["label"=>"Customer","name"=>"customer_id","table"=>"customer_details","value"=>"$reservation->customer_id"]);
+	echo Form::input(["label"=>"Customer Detail","name"=>"customer_detail_id","table"=>"customer_details","value"=>"$reservation->customer_detail_id"]);
 	echo Form::input(["label"=>"Room","name"=>"room_id","table"=>"rooms","value"=>"$reservation->room_id"]);
 	echo Form::input(["label"=>"Check In Date","type"=>"text","name"=>"check_in_date","value"=>"$reservation->check_in_date"]);
 	echo Form::input(["label"=>"Check Out Date","type"=>"text","name"=>"check_out_date","value"=>"$reservation->check_out_date"]);

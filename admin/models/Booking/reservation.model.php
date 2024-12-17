@@ -2,7 +2,7 @@
 class Reservation extends Model implements JsonSerializable{
 	public $id;
 	public $user_id;
-	public $customer_id;
+	public $customer_detail_id;
 	public $booking_date;
 	public $room_id;
 	public $check_in_date;
@@ -16,10 +16,10 @@ class Reservation extends Model implements JsonSerializable{
 
 	public function __construct(){
 	}
-	public function set($id,$user_id,$customer_id,$booking_date,$room_id,$check_in_date,$check_out_date,$special_requests,$total_amount,$remaining_amount,$payment_status,$created_at,$updated_at){
+	public function set($id,$user_id,$customer_detail_id,$booking_date,$room_id,$check_in_date,$check_out_date,$special_requests,$total_amount,$remaining_amount,$payment_status,$created_at,$updated_at){
 		$this->id=$id;
 		$this->user_id=$user_id;
-		$this->customer_id=$customer_id;
+		$this->customer_detail_id=$customer_detail_id;
 		$this->booking_date=$booking_date;
 		$this->room_id=$room_id;
 		$this->check_in_date=$check_in_date;
@@ -34,12 +34,12 @@ class Reservation extends Model implements JsonSerializable{
 	}
 	public function save(){
 		global $db,$tx;
-		$db->query("insert into {$tx}reservations(user_id,customer_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at)values('$this->user_id','$this->customer_id','$this->booking_date','$this->room_id','$this->check_in_date','$this->check_out_date','$this->special_requests','$this->total_amount','$this->remaining_amount','$this->payment_status','$this->created_at','$this->updated_at')");
+		$db->query("insert into {$tx}reservations(user_id,customer_detail_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at)values('$this->user_id','$this->customer_detail_id','$this->booking_date','$this->room_id','$this->check_in_date','$this->check_out_date','$this->special_requests','$this->total_amount','$this->remaining_amount','$this->payment_status','$this->created_at','$this->updated_at')");
 		return $db->insert_id;
 	}
 	public function update(){
 		global $db,$tx;
-		$db->query("update {$tx}reservations set user_id='$this->user_id',customer_id='$this->customer_id',booking_date='$this->booking_date',room_id='$this->room_id',check_in_date='$this->check_in_date',check_out_date='$this->check_out_date',special_requests='$this->special_requests',total_amount='$this->total_amount',remaining_amount='$this->remaining_amount',payment_status='$this->payment_status',created_at='$this->created_at',updated_at='$this->updated_at' where id='$this->id'");
+		$db->query("update {$tx}reservations set user_id='$this->user_id',customer_detail_id='$this->customer_detail_id',booking_date='$this->booking_date',room_id='$this->room_id',check_in_date='$this->check_in_date',check_out_date='$this->check_out_date',special_requests='$this->special_requests',total_amount='$this->total_amount',remaining_amount='$this->remaining_amount',payment_status='$this->payment_status',created_at='$this->created_at',updated_at='$this->updated_at' where id='$this->id'");
 	}
 	public static function delete($id){
 		global $db,$tx;
@@ -50,7 +50,7 @@ class Reservation extends Model implements JsonSerializable{
 	}
 	public static function all(){
 		global $db,$tx;
-		$result=$db->query("select id,user_id,customer_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at from {$tx}reservations");
+		$result=$db->query("select id,user_id,customer_detail_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at from {$tx}reservations");
 		$data=[];
 		while($reservation=$result->fetch_object()){
 			$data[]=$reservation;
@@ -60,7 +60,7 @@ class Reservation extends Model implements JsonSerializable{
 	public static function pagination($page=1,$perpage=10,$criteria=""){
 		global $db,$tx;
 		$top=($page-1)*$perpage;
-		$result=$db->query("select id,user_id,customer_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at from {$tx}reservations $criteria limit $top,$perpage");
+		$result=$db->query("select id,user_id,customer_detail_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at from {$tx}reservations $criteria limit $top,$perpage");
 		$data=[];
 		while($reservation=$result->fetch_object()){
 			$data[]=$reservation;
@@ -75,7 +75,7 @@ class Reservation extends Model implements JsonSerializable{
 	}
 	public static function find($id){
 		global $db,$tx;
-		$result =$db->query("select id,user_id,customer_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at from {$tx}reservations where id='$id'");
+		$result =$db->query("select id,user_id,customer_detail_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at from {$tx}reservations where id='$id'");
 		$reservation=$result->fetch_object();
 			return $reservation;
 	}
@@ -91,7 +91,7 @@ class Reservation extends Model implements JsonSerializable{
 	public function __toString(){
 		return "		Id:$this->id<br> 
 		User Id:$this->user_id<br> 
-		Customer Id:$this->customer_id<br> 
+		Customer Detail Id:$this->customer_detail_id<br> 
 		Booking Date:$this->booking_date<br> 
 		Room Id:$this->room_id<br> 
 		Check In Date:$this->check_in_date<br> 
@@ -123,16 +123,18 @@ class Reservation extends Model implements JsonSerializable{
 		list($total_rows)=$count_result->fetch_row();
 		$total_pages = ceil($total_rows /$perpage);
 		$top = ($page - 1)*$perpage;
-		$result=$db->query("select id,user_id,customer_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at from {$tx}reservations $criteria limit $top,$perpage");
-		$html="<div class='table-responsive'><table class='table table-hover table-nowrap table-centered m-0 '>";
+		$result=$db->query("select id,user_id,customer_detail_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at from {$tx}reservations $criteria limit $top,$perpage");
+		$html="<div class='table-responsive'><table class='table'>";
 			$html.="<tr><th colspan='3'>".Html::link(["class"=>"btn btn-success","route"=>"reservation/create","text"=>"New Reservation"])."</th></tr>";
 		if($action){
-			$html.="<tr><th>Id</th><th>User Id</th><th>Customer Id</th><th>Booking Date</th><th>Room Id</th><th>Check In Date</th><th>Check Out Date</th><th>Special Requests</th><th>Total Amount</th><th>Remaining Amount</th><th>Payment Status</th><th>Created At</th><th>Updated At</th><th>Action</th></tr>";
+			$html.="<tr><th>Id</th><th>User Id</th><th>Customer Name</th><th>Booking Date</th><th>Room Number</th><th>Check In Date</th><th>Check Out Date</th><th>Special Requests</th><th>Total Amount</th><th>Remaining Amount</th><th>Payment Status</th><th>Created At</th><th>Updated At</th><th>Action</th></tr>";
 		}else{
-			$html.="<tr><th>Id</th><th>User Id</th><th>Customer Id</th><th>Booking Date</th><th>Room Id</th><th>Check In Date</th><th>Check Out Date</th><th>Special Requests</th><th>Total Amount</th><th>Remaining Amount</th><th>Payment Status</th><th>Created At</th><th>Updated At</th></tr>";
+			$html.="<tr><th>Id</th><th>User Id</th><th>Customer Detail Id</th><th>Booking Date</th><th>Room Id</th><th>Check In Date</th><th>Check Out Date</th><th>Special Requests</th><th>Total Amount</th><th>Remaining Amount</th><th>Payment Status</th><th>Created At</th><th>Updated At</th></tr>";
 		}
 		while($reservation=$result->fetch_object()){
 			$action_buttons = "";
+			$cname = CustomerDetail::find($reservation->customer_detail_id)->name;
+			$rroom = Room::find($reservation->room_id)->room_number;
 			if($action){
 				$action_buttons = "<td><div class='btn-group' style='display:flex;'>";
 				$action_buttons.= Event::button(["name"=>"show", "value"=>"Show", "class"=>"btn btn-info", "route"=>"reservation/show/$reservation->id"]);
@@ -140,21 +142,21 @@ class Reservation extends Model implements JsonSerializable{
 				$action_buttons.= Event::button(["name"=>"delete", "value"=>"Delete", "class"=>"btn btn-danger", "route"=>"reservation/confirm/$reservation->id"]);
 				$action_buttons.= "</div></td>";
 			}
-			$html.="<tr><td>$reservation->id</td><td>$reservation->user_id</td><td>$reservation->customer_id</td><td>$reservation->booking_date</td><td>$reservation->room_id</td><td>$reservation->check_in_date</td><td>$reservation->check_out_date</td><td>$reservation->special_requests</td><td>$reservation->total_amount</td><td>$reservation->remaining_amount</td><td>$reservation->payment_status</td><td>$reservation->created_at</td><td>$reservation->updated_at</td> $action_buttons</tr>";
+			$html.="<tr><td>$reservation->id</td><td>$reservation->user_id</td><td>$cname</td><td>$reservation->booking_date</td><td>$rroom</td><td>$reservation->check_in_date</td><td>$reservation->check_out_date</td><td>$reservation->special_requests</td><td>$reservation->total_amount</td><td>$reservation->remaining_amount</td><td>$reservation->payment_status</td><td>$reservation->created_at</td><td>$reservation->updated_at</td> $action_buttons</tr>";
 		}
-		$html.="</table></div>";
+		$html.="</table> </div>";
 		$html.= pagination($page,$total_pages);
 		return $html;
 	}
 	static function html_row_details($id){
 		global $db,$tx,$base_url;
-		$result =$db->query("select id,user_id,customer_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at from {$tx}reservations where id={$id}");
+		$result =$db->query("select id,user_id,customer_detail_id,booking_date,room_id,check_in_date,check_out_date,special_requests,total_amount,remaining_amount,payment_status,created_at,updated_at from {$tx}reservations where id={$id}");
 		$reservation=$result->fetch_object();
 		$html="<table class='table'>";
 		$html.="<tr><th colspan=\"2\">Reservation Show</th></tr>";
 		$html.="<tr><th>Id</th><td>$reservation->id</td></tr>";
 		$html.="<tr><th>User Id</th><td>$reservation->user_id</td></tr>";
-		$html.="<tr><th>Customer Id</th><td>$reservation->customer_id</td></tr>";
+		$html.="<tr><th>Customer Detail Id</th><td>$reservation->customer_detail_id</td></tr>";
 		$html.="<tr><th>Booking Date</th><td>$reservation->booking_date</td></tr>";
 		$html.="<tr><th>Room Id</th><td>$reservation->room_id</td></tr>";
 		$html.="<tr><th>Check In Date</th><td>$reservation->check_in_date</td></tr>";

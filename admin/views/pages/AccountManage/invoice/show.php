@@ -89,49 +89,46 @@
                 </td>
             </tr>
             <tr>
-                <td><strong>Guest Name:</strong> <input type="text" class="input-field" placeholder="Enter Guest Name"></td>
-                <td><strong>Room Number:</strong> <input type="text" class="input-field" placeholder="Enter Room Number"></td>
+                <td><strong>Guest Name:</strong><span id="guest-name"> <?php echo $invoice->customer_detail_name; ?></span> </td>
+                <td><strong>Room Number:</strong> <span id="room-number"> <?php echo Room::find($invoice->reservation_id)->room_number; ?> </td>
             </tr>
             <tr>
-                <td><strong>Check-In:</strong> <input type="date" class="input-field"></td>
-                <td><strong>Check-Out:</strong> <input type="date" class="input-field"></td>
+                <td><strong>Check-In:</strong> <span id="check-in"> <?php echo Reservation::find($invoice->reservation_id)->check_in_date; ?></span> </td>
+                <td><strong>Check-Out:</strong> <span id="check-out"> <?php echo Reservation::find($invoice->reservation_id)->check_out_date; ?> </td>
             </tr>
         </table>
     </div>
     <div class="items">
         <table>
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
+            <tr>
+                <th>Rooms & Other Services</th>
+                <th>#Off Nights/Qty</th>
+                <th>Price Per Night/Qty</th>
+                <th>Total per section($)</th>
+            </tr>
             <tbody id="items-body" class="items-body">
-                <tr class="item-row">
-                    <td><input type="text" class="input-field item-name" placeholder="Room Charges"></td>
-                    <td><input type="number" class="input-field quantity" placeholder="3" oninput="updateTotals()"></td>
-                    <td><input type="number" class="input-field unit-price" placeholder="100.00" step="0.01" oninput="updateTotals()"></td>
-                    <td class="total">300.00</td>
-                </tr>
+                <?php
+                // $items = Invoice:: invoice_detail($invoice->id);
+                // print_r($items);
+
+
+                ?>
             </tbody>
         </table>
-        <button onclick="addItem()">Add Item</button>
     </div>
     <div class="summary">
         <table>
             <tr>
                 <td><strong>Subtotal</strong></td>
-                <td id="subtotal">300.00</td>
+                <td id="subtotal"><?php echo $invoice->total_amount; ?></td>
             </tr>
             <tr>
                 <td><strong>Tax (10%)</strong></td>
-                <td id="tax">30.00</td>
+                <td id="tax"><?php echo $invoice->tax_amount; ?></td>
             </tr>
             <tr>
                 <td><strong>Total</strong></td>
-                <td id="grand-total">330.00</td>
+                <td id="grand-total"><?php echo $grand_total= $invoice->total_amount + $invoice->tax_amount; ?></td>
             </tr>
         </table>
     </div>
@@ -139,3 +136,8 @@
         <p>Thank you for staying with us!</p>
     </div>
 </div>
+<script>
+    $(document).ready(function() {
+
+    });
+</script>

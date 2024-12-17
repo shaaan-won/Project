@@ -73,6 +73,12 @@ class Invoice extends Model implements JsonSerializable{
 		$invoice=$result->fetch_object();
 			return $invoice;
 	}
+	public static function invoice_detail($id){
+		global $db,$tx;
+		$result =$db->query("select id,name,customer_detail_id,customer_detail_name,reservation_id,total_amount,tax_amount,payment_status,created_at,updated_at from {$tx}invoices where invoice_id='$id'");
+		$invoice=$result->fetch_all(MYSQLI_ASSOC);
+			return $invoice;
+	}
 	static function get_last_id(){
 		global $db,$tx;
 		$result =$db->query("select max(id) last_id from {$tx}invoices");
