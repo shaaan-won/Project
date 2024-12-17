@@ -65,12 +65,6 @@ class BookingDetail extends Model implements JsonSerializable{
 		$bookingdetail=$result->fetch_object();
 			return $bookingdetail;
 	}
-	public static function bookingdetail($id){
-		global $db,$tx;
-		$result =$db->query("select id,booking_id,room_id,from_date,to_date,price from {$tx}booking_details where booking_id='$id'");
-		$bookingdetail=$result->fetch_all(MYSQLI_ASSOC);
-			return $bookingdetail;
-	}
 	static function get_last_id(){
 		global $db,$tx;
 		$result =$db->query("select max(id) last_id from {$tx}booking_details");

@@ -28,7 +28,7 @@ public function save($data,$file){
 		$errors["price"]="Invalid price";
 	}
 
-*/		
+*/
 		if(count($errors)==0){
 			$bookingdetail=new BookingDetail();
 		$bookingdetail->booking_id=$data["booking_id"];
