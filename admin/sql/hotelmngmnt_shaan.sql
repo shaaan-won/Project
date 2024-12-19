@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 03, 2024 at 09:19 AM
+-- Generation Time: Dec 19, 2024 at 04:32 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -29,11 +29,19 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `ht_billings` (
   `id` int(11) NOT NULL,
+  `invoice_id` int(11) DEFAULT NULL,
   `reservation_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
-  `itemized_charges` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`itemized_charges`)),
+  `customer_detail_name` varchar(255) DEFAULT NULL,
+  `itemized_names` text DEFAULT NULL,
+  `itemized_charges` decimal(10,2) DEFAULT NULL,
+  `discount_amount` decimal(10,2) DEFAULT NULL,
+  `tax_amount` decimal(10,2) DEFAULT NULL,
   `total_amount` decimal(10,2) DEFAULT NULL,
+  `payment_id` int(11) DEFAULT NULL,
+  `payment_amount` decimal(10,2) DEFAULT NULL,
   `payment_method` varchar(50) DEFAULT NULL,
+  `payment_status` varchar(50) DEFAULT NULL,
   `payment_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -42,11 +50,67 @@ CREATE TABLE `ht_billings` (
 -- Dumping data for table `ht_billings`
 --
 
-INSERT INTO `ht_billings` (`id`, `reservation_id`, `user_id`, `itemized_charges`, `total_amount`, `payment_method`, `payment_date`, `created_at`) VALUES
-(1, 1, 1, '{\"room_charge\": 150.00, \"tax\": 50.00}', 200.00, 'Credit Card', '2024-11-25 18:00:00', '2024-11-26 04:23:38'),
-(2, 2, 2, '{\"room_charge\": 400.00, \"tax\": 50.00}', 450.00, 'Debit Card', '2024-11-30 18:00:00', '2024-11-26 04:23:38'),
-(3, 3, 3, '{\"room_charge\": 550.00, \"tax\": 50.00}', 600.00, 'Credit Card', '2024-12-09 18:00:00', '2024-11-26 04:23:38'),
-(4, 4, 4, '{\"room_charge\": 1000.00, \"tax\": 200.00}', 1200.00, 'PayPal', '2024-12-14 18:00:00', '2024-11-26 04:23:38');
+INSERT INTO `ht_billings` (`id`, `invoice_id`, `reservation_id`, `user_id`, `customer_detail_name`, `itemized_names`, `itemized_charges`, `discount_amount`, `tax_amount`, `total_amount`, `payment_id`, `payment_amount`, `payment_method`, `payment_status`, `payment_date`, `created_at`) VALUES
+(1, 1, 101, 1001, 'John Doe', 'Room Service, Spa', 200.00, 20.00, 10.00, 190.00, 1, 190.00, 'Credit Card', 'Paid', '2023-12-01 04:30:00', '2024-12-05 05:07:07'),
+(2, 2, 102, 1002, 'Jane Smith', 'Dinner, Parking', 150.00, 15.00, 7.50, 142.50, 2, 142.50, 'Cash', 'Paid', '2023-12-02 12:45:00', '2024-12-05 05:07:07'),
+(3, 3, 103, 1003, 'Michael Brown', 'Conference Room, Coffee Service', 300.00, 30.00, 15.00, 285.00, 3, 285.00, 'Bank Transfer', 'Pending', '2023-12-03 03:00:00', '2024-12-05 05:07:07'),
+(4, 4, 104, 1004, 'Emily Davis', 'Room Stay, Breakfast', 500.00, 50.00, 25.00, 475.00, 4, 475.00, 'Debit Card', 'Paid', '2023-12-04 02:15:00', '2024-12-05 05:07:07');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ht_bookings`
+--
+
+CREATE TABLE `ht_bookings` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `created_at` datetime NOT NULL,
+  `order_total` float NOT NULL,
+  `paid_total` float NOT NULL,
+  `remark` varchar(255) NOT NULL,
+  `customer_detail_id` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ht_bookings`
+--
+
+INSERT INTO `ht_bookings` (`id`, `created_at`, `order_total`, `paid_total`, `remark`, `customer_detail_id`) VALUES
+(1, '2024-05-22 00:00:00', 1000, 1000, 'Test', 7),
+(2, '2024-05-24 00:00:00', 700, 700, 'Test Update Api', 3),
+(3, '2024-05-25 00:00:00', 3544, 3544, 'Test', 2),
+(4, '2024-05-23 00:00:00', 500, 500, 'Test Api', 3),
+(5, '0000-00-00 00:00:00', 446, 446, 'Test', 2),
+(6, '0000-00-00 00:00:00', 344, 455, 'test', 1),
+(7, '0000-00-00 00:00:00', 5000, 2000, 'NT', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ht_booking_details`
+--
+
+CREATE TABLE `ht_booking_details` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `booking_id` int(10) UNSIGNED NOT NULL,
+  `room_id` int(10) UNSIGNED NOT NULL,
+  `from_date` date NOT NULL,
+  `to_date` date NOT NULL,
+  `price` float NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `ht_booking_details`
+--
+
+INSERT INTO `ht_booking_details` (`id`, `booking_id`, `room_id`, `from_date`, `to_date`, `price`) VALUES
+(1, 1, 1, '2024-05-22', '2024-05-24', 1000),
+(2, 2, 2, '2024-05-24', '2024-05-25', 700),
+(3, 3, 3, '2024-05-25', '2024-05-26', 3544),
+(4, 4, 4, '2024-05-23', '2024-05-24', 500),
+(5, 5, 5, '2024-05-24', '2024-05-25', 446),
+(6, 6, 6, '2024-05-25', '2024-05-26', 344),
+(7, 7, 7, '2024-05-26', '2024-05-27', 5000);
 
 -- --------------------------------------------------------
 
@@ -305,8 +369,6 @@ CREATE TABLE `ht_invoices_view` (
 ,`payment_status` enum('Paid','Pending','Overdue')
 ,`created_at` datetime
 ,`updated_at` datetime
-,`reservation_name` varchar(100)
-,`room_name` int(100)
 ,`room_number` varchar(10)
 ,`room_type_name` varchar(50)
 ,`check_in` date
@@ -417,9 +479,8 @@ INSERT INTO `ht_reports` (`id`, `report_type`, `report_data`, `created_at`) VALU
 
 CREATE TABLE `ht_reservations` (
   `id` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
-  `customer_id` int(11) DEFAULT NULL,
+  `customer_detail_id` int(11) DEFAULT NULL,
   `booking_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `room_id` int(11) DEFAULT NULL,
   `check_in_date` date DEFAULT NULL,
@@ -436,11 +497,11 @@ CREATE TABLE `ht_reservations` (
 -- Dumping data for table `ht_reservations`
 --
 
-INSERT INTO `ht_reservations` (`id`, `name`, `user_id`, `customer_id`, `booking_date`, `room_id`, `check_in_date`, `check_out_date`, `special_requests`, `total_amount`, `remaining_amount`, `payment_status`, `created_at`, `updated_at`) VALUES
-(1, '', 1, 101, '2024-11-26 04:23:38', 1, '2024-11-26', '2024-11-30', 'No special requests', 200.00, 200.00, 'Pending', '2024-11-26 04:23:38', '2024-11-26 04:23:38'),
-(2, '', 2, 102, '2024-11-26 04:23:38', 2, '2024-12-01', '2024-12-05', 'Late check-in request', 450.00, 450.00, 'Pending', '2024-11-26 04:23:38', '2024-11-26 04:23:38'),
-(3, '', 3, 103, '2024-11-26 04:23:38', 3, '2024-12-10', '2024-12-12', 'Request for extra pillows', 600.00, 600.00, 'Pending', '2024-11-26 04:23:38', '2024-11-26 04:23:38'),
-(4, '', 4, 104, '2024-11-26 04:23:38', 4, '2024-12-15', '2024-12-18', 'Celebrate anniversary', 1200.00, 1200.00, 'Pending', '2024-11-26 04:23:38', '2024-11-26 04:23:38');
+INSERT INTO `ht_reservations` (`id`, `user_id`, `customer_detail_id`, `booking_date`, `room_id`, `check_in_date`, `check_out_date`, `special_requests`, `total_amount`, `remaining_amount`, `payment_status`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '2024-11-26 04:23:38', 1, '2024-11-26', '2024-11-30', 'No special requests', 200.00, 200.00, 'Pending', '2024-11-26 04:23:38', '2024-12-17 04:43:13'),
+(2, 2, 2, '2024-11-26 04:23:38', 2, '2024-12-01', '2024-12-05', 'Late check-in request', 450.00, 450.00, 'Pending', '2024-11-26 04:23:38', '2024-12-17 04:43:18'),
+(3, 3, 3, '2024-11-26 04:23:38', 3, '2024-12-10', '2024-12-12', 'Request for extra pillows', 600.00, 600.00, 'Pending', '2024-11-26 04:23:38', '2024-12-17 04:43:26'),
+(4, 4, 4, '2024-11-26 04:23:38', 4, '2024-12-15', '2024-12-18', 'Celebrate anniversary', 1200.00, 1200.00, 'Pending', '2024-11-26 04:23:38', '2024-12-17 04:43:31');
 
 -- --------------------------------------------------------
 
@@ -526,6 +587,7 @@ INSERT INTO `ht_room_servicerequests` (`id`, `user_id`, `room_id`, `request_type
 CREATE TABLE `ht_room_types` (
   `id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
+  `room_price` int(11) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `max_occupancy` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -536,11 +598,11 @@ CREATE TABLE `ht_room_types` (
 -- Dumping data for table `ht_room_types`
 --
 
-INSERT INTO `ht_room_types` (`id`, `name`, `description`, `max_occupancy`, `created_at`, `updated_at`) VALUES
-(1, 'Single Room', 'A small room with a single bed, ideal for one person.', 1, '2024-11-26 04:23:38', '2024-11-26 04:23:38'),
-(2, 'Double Room', 'A spacious room with two beds, ideal for two people.', 2, '2024-11-26 04:23:38', '2024-11-26 04:23:38'),
-(3, 'Suite', 'A luxurious room with a separate living area, perfect for business or long stays.', 4, '2024-11-26 04:23:38', '2024-11-26 04:23:38'),
-(4, 'Penthouse', 'A high-end room with panoramic views and luxury amenities.', 2, '2024-11-26 04:23:38', '2024-11-26 04:23:38');
+INSERT INTO `ht_room_types` (`id`, `name`, `room_price`, `description`, `max_occupancy`, `created_at`, `updated_at`) VALUES
+(1, 'Single Room', 120, 'A small room with a single bed, ideal for one person.', 1, '2024-11-26 04:23:38', '2024-12-15 04:02:53'),
+(2, 'Double Room', 320, 'A spacious room with two beds, ideal for two people.', 2, '2024-11-26 04:23:38', '2024-12-15 04:03:01'),
+(3, 'Suite', 850, 'A luxurious room with a separate living area, perfect for business or long stays.', 4, '2024-11-26 04:23:38', '2024-12-15 04:03:04'),
+(4, 'Penthouse', 5500, 'A high-end room with panoramic views and luxury amenities.', 2, '2024-11-26 04:23:38', '2024-12-15 04:03:08');
 
 -- --------------------------------------------------------
 
@@ -670,7 +732,7 @@ INSERT INTO `ht_work_schedule` (`id`, `staff_id`, `day_of_week`, `start_time`, `
 --
 DROP TABLE IF EXISTS `ht_invoices_view`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `ht_invoices_view`  AS SELECT `ht_invoices`.`id` AS `id`, `ht_invoices`.`name` AS `name`, `ht_invoices`.`customer_detail_id` AS `customer_detail_id`, `ht_invoices`.`customer_detail_name` AS `customer_detail_name`, `ht_invoices`.`reservation_id` AS `reservation_id`, `ht_invoices`.`total_amount` AS `total_amount`, `ht_invoices`.`tax_amount` AS `tax_amount`, `ht_invoices`.`payment_status` AS `payment_status`, `ht_invoices`.`created_at` AS `created_at`, `ht_invoices`.`updated_at` AS `updated_at`, (select `ht_reservations`.`name` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`) AS `reservation_name`, (select `ht_rooms`.`name` from `ht_rooms` where `ht_rooms`.`id` = (select `ht_reservations`.`room_id` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`)) AS `room_name`, (select `ht_rooms`.`room_number` from `ht_rooms` where `ht_rooms`.`id` = (select `ht_reservations`.`room_id` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`)) AS `room_number`, (select `ht_room_types`.`name` from `ht_room_types` where `ht_room_types`.`id` = (select `ht_rooms`.`room_type_id` from `ht_rooms` where `ht_rooms`.`id` = (select `ht_reservations`.`room_id` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`))) AS `room_type_name`, (select `ht_reservations`.`check_in_date` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`) AS `check_in`, (select `ht_reservations`.`check_out_date` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`) AS `check_out`, (select `ht_reservations`.`total_amount` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`) AS `reservation_total_amount` FROM `ht_invoices` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `ht_invoices_view`  AS SELECT `ht_invoices`.`id` AS `id`, `ht_invoices`.`name` AS `name`, `ht_invoices`.`customer_detail_id` AS `customer_detail_id`, `ht_invoices`.`customer_detail_name` AS `customer_detail_name`, `ht_invoices`.`reservation_id` AS `reservation_id`, `ht_invoices`.`total_amount` AS `total_amount`, `ht_invoices`.`tax_amount` AS `tax_amount`, `ht_invoices`.`payment_status` AS `payment_status`, `ht_invoices`.`created_at` AS `created_at`, `ht_invoices`.`updated_at` AS `updated_at`, (select `ht_rooms`.`room_number` from `ht_rooms` where `ht_rooms`.`id` = (select `ht_reservations`.`room_id` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`)) AS `room_number`, (select `ht_room_types`.`name` from `ht_room_types` where `ht_room_types`.`id` = (select `ht_rooms`.`room_type_id` from `ht_rooms` where `ht_rooms`.`id` = (select `ht_reservations`.`room_id` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`))) AS `room_type_name`, (select `ht_reservations`.`check_in_date` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`) AS `check_in`, (select `ht_reservations`.`check_out_date` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`) AS `check_out`, (select `ht_reservations`.`total_amount` from `ht_reservations` where `ht_reservations`.`id` = `ht_invoices`.`reservation_id`) AS `reservation_total_amount` FROM `ht_invoices` ;
 
 --
 -- Indexes for dumped tables
@@ -680,6 +742,18 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- Indexes for table `ht_billings`
 --
 ALTER TABLE `ht_billings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `ht_bookings`
+--
+ALTER TABLE `ht_bookings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `ht_booking_details`
+--
+ALTER TABLE `ht_booking_details`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -814,6 +888,18 @@ ALTER TABLE `ht_work_schedule`
 --
 ALTER TABLE `ht_billings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `ht_bookings`
+--
+ALTER TABLE `ht_bookings`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `ht_booking_details`
+--
+ALTER TABLE `ht_booking_details`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `ht_checkincheckout`
